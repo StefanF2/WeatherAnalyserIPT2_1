@@ -11,3 +11,4 @@ def test_csv_einlesen():
     data = csv_einlesen("test_wetterdaten.csv")
     assert isinstance(data, list) 
     assert len(data) == 7
+
