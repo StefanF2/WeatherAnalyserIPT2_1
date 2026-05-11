@@ -4,7 +4,20 @@ import os # Damit man Dateipfade finden kann egal wo es liegt
 # Hier wird die CSV Datei eingelesen und in einer "Python Liste" gespeichert
 def csv_einlesen(file_name):
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    file_path = os.path.join(script_dir, file_name)
+
+# Projekt-Root bestimmen
+    root_dir = os.path.dirname(script_dir)
+
+    file_path = None
+
+    for root, dirs, files in os.walk(root_dir):
+
+        if file_name in files:
+            file_path = os.path.join(root, file_name)
+            break
+
+    if file_path is None:
+        raise FileNotFoundError(f"Datei '{file_name}' nicht gefunden")
 
     data = [] # Diese Liste wird erstellt wo alle Zeilen von der CSV Datei gespeichert werden. 
 
@@ -69,20 +82,24 @@ def header():
     print(" Datei Pfad: " + file_path)
     print(headerline)
 
-header()
-data = csv_einlesen("wetterdaten.csv")  # Datei wird geladen
-if not data:
-    print("Fehler: Keine Daten vorhanden!") # Falls die datei leer ist oder nicht gefunden wird, wird eine Fehlermeldung ausgegeben
+def main():
+    header()
+    data = csv_einlesen("wetterdaten.csv")  # Datei wird geladen
+    if not data:
+        print("Fehler: Keine Daten vorhanden!") # Falls die datei leer ist oder nicht gefunden wird, wird eine Fehlermeldung ausgegeben
 
-keys = ["Temperatur", "Windgeschwindigkeit", "Schneehoehe"] # Die Messwerte werden duchgegangen und die Statistiken werden berechnet und ausgegeben
+    keys = ["Temperatur", "Windgeschwindigkeit", "Schneehoehe"] # Die Messwerte werden duchgegangen und die Statistiken werden berechnet und ausgegeben
 
-for key in keys:    #Für jeden Messwert wird die folgende Schleife ausgeführt
-    print(f"\n--- {key} ---")
+    for key in keys:    #Für jeden Messwert wird die folgende Schleife ausgeführt
+        print(f"\n--- {key} ---")
 
-    sorted_data = merge_sort(data.copy(), key) # Hier wird die Datenliste mit merge sort sortiert
+        sorted_data = merge_sort(data.copy(), key) # Hier wird die Datenliste mit merge sort sortiert
 
-    minimum_item, maximum_item, average = calculate_stats(sorted_data, key) # Hier werden die Minimum, Maximum und Durchschnittswerte berechnet
+        minimum_item, maximum_item, average = calculate_stats(sorted_data, key) # Hier werden die Minimum, Maximum und Durchschnittswerte berechnet
 
-    print(f"  Minimum: \t{minimum_item[key]}\t(Datum: {minimum_item['Datum']})") # Diese beiden zeilen geben den Minimum, Maximum und Durchschnitt aus und auch noch den Datum 
-    print(f"  Maximum: \t{maximum_item[key]}\t(Datum: {maximum_item['Datum']})")
-    print(f"  Durchschnitt: {average:.2f}")
+        print(f"  Minimum: \t{minimum_item[key]}\t(Datum: {minimum_item['Datum']})") # Diese beiden zeilen geben den Minimum, Maximum und Durchschnitt aus und auch noch den Datum 
+        print(f"  Maximum: \t{maximum_item[key]}\t(Datum: {maximum_item['Datum']})")
+        print(f"  Durchschnitt: {average:.2f}")
+
+if __name__ == "__main__":
+    main()
