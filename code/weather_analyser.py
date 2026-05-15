@@ -3,9 +3,18 @@ import os # Damit man Dateipfade finden kann egal wo es liegt
 
 # Hier wird die CSV Datei eingelesen und in einer "Python Liste" gespeichert
 def csv_einlesen(file_name):
-    script_dir = os.path.dirname(os.path.abspath(__file__))
+Liest eine CSV-Datei mit Wetterdaten ein.
+"""
+    Args:
+        file_name: Name der Datei
 
-# Projekt-Root bestimmen
+    Returns:
+        list: Liste mit Wetterdaten als Dictionaries
+
+    Raises:
+        FileNotFoundError: Wenn die Datei nicht gefunden wird
+"""
+    script_dir = os.path.dirname(os.path.abspath(__file__))
     root_dir = os.path.dirname(script_dir)
 
     file_path = None
@@ -23,6 +32,20 @@ def csv_einlesen(file_name):
 
     with open(file_path, newline="", encoding="utf-8") as file: # Hier wird die CSV Datei geöffnet
         reader = csv.DictReader(file, delimiter=";")            # Hier wird die CSV Datei Zeile für Zeile eingelesen und in einem Dictionary gespeichert
+        
+        expected_fields = [
+            "datum",
+            "temperatur",
+            "windgeschwindigkeit",
+            "schneehoehe"
+        ]
+
+        # Prüfen ob Kopfzeile korrekt ist
+        if reader.fieldnames is None:
+            return []
+
+        if not all(field in reader.fieldnames for field in expected_fields):
+            return []
 
         for row in reader:  # Hier wird jede Zeile ausgeführt
             data.append({   # Hier werden die Werte von der CSV Datei in die Liste gespeichert. Es wird auch gleich in die richtige Datentypen umgewandelt
@@ -37,6 +60,17 @@ def csv_einlesen(file_name):
 
 # Hier wird die Merge Funktion definiert welche zwei sotierte listen bekommt und kombiniert. Es wird key gegeben damit die Funktion weiss welche Dateien benutzt werden sollen
 def merge(left, right, key):
+    """
+    Führt zwei sortierte Listen zu einer sortierten Liste zusammen
+
+    Args:
+        left (list): Linke sortierte Liste
+        right (list): Rechte sortierte Liste
+        key (str): Schlüssel für den Vergleich
+
+    Returns:
+        list: Zusammengeführte sortierte Liste
+    """
     result = []
     i = j = 0
 
@@ -55,6 +89,16 @@ def merge(left, right, key):
 
 # 🔹 MERGE SORT
 def merge_sort(data, key):
+    """
+    Sortiert eine Liste mit dem Merge-Sort-Algorithmus
+
+    Args:
+        data (list): Unsortierende Liste
+        key (str): Schlüssel nach dem sortiert wird
+
+    Returns:
+        list: Sortierte Liste
+    """
     if len(data) <= 1:
         return data
 
@@ -66,7 +110,21 @@ def merge_sort(data, key):
 
 # Hier wird Minimum, Maximum und Durchschnitt berechnet.
 def calculate_stats(data, key):
+    """
+    Berechnet Minimum, Maximum und Durchschnitt einer Liste
+
+    Args:
+        data (list): Liste mit Wetterdaten
+        key (str): Schlüssel für die Berechnung
+
+    Returns:
+         Minimum, Maximum und Durchschnitt
+    """   
+    if not data:
+        return None, None, None
+    
     values = [item[key] for item in data] # Hier werden alle Werte von dem key in einer Liste gespeichert damit man den Durchschnitt berechnen kann
+    
 
     minimum_item = min(data, key=lambda x: x[key])
     maximum_item = max(data, key=lambda x: x[key])
@@ -75,6 +133,7 @@ def calculate_stats(data, key):
     return minimum_item, maximum_item, average
 
 def header():
+    #Gibt den Header aus
     headerline = "=" * 80
     file_path = os.path.abspath(__file__) 
     print(headerline)
@@ -83,10 +142,17 @@ def header():
     print(headerline)
 
 def main():
+    #Führt das Hauptprogramm aus und gibt die Daten an
     header()
     data = csv_einlesen("wetterdaten.csv")  # Datei wird geladen
     if not data:
         print("Fehler: Keine Daten vorhanden!") # Falls die datei leer ist oder nicht gefunden wird, wird eine Fehlermeldung ausgegeben
+
+    einheiten = {
+    "Temperatur": "°C",
+    "Windgeschwindigkeit": "km/h",
+    "Schneehoehe": "cm"
+}
 
     keys = ["Temperatur", "Windgeschwindigkeit", "Schneehoehe"] # Die Messwerte werden duchgegangen und die Statistiken werden berechnet und ausgegeben
 
@@ -97,9 +163,9 @@ def main():
 
         minimum_item, maximum_item, average = calculate_stats(sorted_data, key) # Hier werden die Minimum, Maximum und Durchschnittswerte berechnet
 
-        print(f"  Minimum: \t{minimum_item[key]}\t(Datum: {minimum_item['Datum']})") # Diese beiden zeilen geben den Minimum, Maximum und Durchschnitt aus und auch noch den Datum 
-        print(f"  Maximum: \t{maximum_item[key]}\t(Datum: {maximum_item['Datum']})")
-        print(f"  Durchschnitt: {average:.2f}")
+        print(f"  Minimum: \t{minimum_item[key]}{einheiten[key]} (Datum:{minimum_item['Datum']})") # Diese beiden zeilen geben den Minimum, Maximum und Durchschnitt aus und auch noch den Datum 
+        print(f"  Maximum: \t{maximum_item[key]}{einheiten[key]} (Datum:{maximum_item['Datum']})")
+        print(f"  Durchschnitt: {average:.2f}{einheiten[key]}")
 
 if __name__ == "__main__":
     main()
