@@ -3,8 +3,7 @@ import os # Damit man Dateipfade finden kann egal wo es liegt
 
 # Hier wird die CSV Datei eingelesen und in einer "Python Liste" gespeichert
 def csv_einlesen(file_name):
-Liest eine CSV-Datei mit Wetterdaten ein.
-"""
+    """
     Args:
         file_name: Name der Datei
 
@@ -13,7 +12,7 @@ Liest eine CSV-Datei mit Wetterdaten ein.
 
     Raises:
         FileNotFoundError: Wenn die Datei nicht gefunden wird
-"""
+    """
     script_dir = os.path.dirname(os.path.abspath(__file__)) # Hier wird der Ordner genommen wo innen das Python Skript ist
     root_dir = os.path.dirname(script_dir) # Hier wird der Ordner vorherig genommen von script_dir also der root folder
     file_path = None
@@ -139,17 +138,19 @@ def header(): # Gibt den Header aus
     print(headerline)
 
 def main():  #Führt das Hauptprogramm aus und gibt die Daten an
-    header()
-    data = csv_einlesen("wetterdaten.csv")  # Datei wird geladen
-    if not data:
-        print("Fehler: Keine Daten vorhanden!") # Falls die datei leer ist oder nicht gefunden wird, wird eine Fehlermeldung ausgegeben
+    
+    try:
+        data = csv_einlesen("wetterdaten.csv")  # Datei wird geladen
+    except FileNotFoundError:
+        print("Fehler: Wetterdatei wurde nicht gefunden!") # Falls die Datei nicht gefunden wird, wird eine Fehlermeldung ausgegeben
+        return
 
     einheiten = {
     "Temperatur": "°C",
     "Windgeschwindigkeit": "km/h",
     "Schneehoehe": "cm"
-}
-
+    }
+    header()
     keys = ["Temperatur", "Windgeschwindigkeit", "Schneehoehe"] # Die Messwerte werden duchgegangen und die Statistiken werden berechnet und ausgegeben
 
     for key in keys:    #Für jeden Messwert wird die folgende Schleife ausgeführt
