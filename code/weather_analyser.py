@@ -55,7 +55,6 @@ def csv_einlesen(file_name):
 
     return data # Hier wird die Liste mit den Werte zurückgegeben
 
-
 # Hier wird die Merge Funktion definiert welche zwei sotierte listen bekommt und kombiniert. Es wird key gegeben damit die Funktion weiss welche Dateien benutzt werden sollen
 def merge(left, right, key):
     """
@@ -83,7 +82,6 @@ def merge(left, right, key):
     result.extend(left[i:]) # Hier werden alle restlichen left Element hinzugefügt
     result.extend(right[j:]) # Hier werden alle restlichen right Elemente hinzugefügt
     return result # Die sortierte Liste wird zurückgegeben
-
 
 def merge_sort(data, key):
     """
